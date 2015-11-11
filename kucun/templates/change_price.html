@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}改价记录{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>商品名</th>
+                <th>类型</th>
+                <th>原价</th>
+                <th>现价</th>
+                <th>操作时间</th>
+                <th>操作人</th>
+            </tr>
+            {% for change_price in change_prices %}
+                <tr class="{% if change_price.old_price > change_price.new_price %}success{% else %}danger{% endif %}">
+                    <td>{{ change_price.goods }}</td>
+                    <td>
+                        {% if change_price.goods.goods_type == 0 %}
+                            手机
+                        {% elif change_price.goods.goods_type == 1 %}
+                            配件
+                        {% endif %}
+                    </td>
+                    <td>{{ change_price.old_price }}</td>
+                    <td>{{ change_price.new_price }}</td>
+                    <td>{{ change_price.date|date:"Y.n.j H:i" }}</td>
+                    <td>{{ change_price.updater }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}

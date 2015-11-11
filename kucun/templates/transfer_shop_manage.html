@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}调库渠道维护{% endblock %}
+
+{% block otherstyle %}
+    <style>
+        .form-signin {
+            margin: 0 auto;
+            max-width: 330px;
+            padding: 15px;
+        }
+
+        .form-signin .form-control {
+            box-sizing: border-box;
+            font-size: 16px;
+            height: auto;
+            padding: 10px;
+            position: relative;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-signin input[type="text"] {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 1px;
+            margin-top: -7px;
+        }
+
+        .form-signin button {
+            margin-top: 50px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("button.delete").click(function (e) {
+                e.preventDefault();
+                var shop_id = $(this).attr("shop_id");
+                if (confirm("是否确认删除")) {
+                    $.post("/kucun/api/delete_transfer_shop/",
+                            {
+                                shop_id: shop_id
+                            },
+                            function (data, status) {
+                                if (data == 'chaoguo') {
+                                    alert('操作失败！库存不足！')
+                                } else if (data == 'stop') {
+                                    alert('权限不足！')
+                                } else if (data == 'false') {
+                                    alert('操作异常！')
+                                } else if (data == 'delete_false') {
+                                    alert('删除失败！')
+                                } else if (data == 'success') {
+                                    alert('删除成功！')
+                                    location.reload()
+                                }
+                            });
+                }
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">添加调库渠道</h3>
+            </div>
+            <div class="panel-body">
+                <form role="form" class="form-signin" method="post">
+                    <p>渠道名称：</p>
+                    <input type="text" autofocus="" required="" name="name" placeholder="渠道名称"
+                           class="form-control">
+
+                    <p>联 电：</p>
+                    <input type="text" placeholder="联电" name="phonenumber" class="form-control">
+                    <button type="submit" class="btn btn-lg btn-primary btn-block">添加</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">现有调库渠道</h3>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover">
+                    <tr>
+                        <th>名 称</th>
+                        <th>联 电</th>
+                        <th>删 除</th>
+                    </tr>
+                    {% for shop in shops %}
+                        <tr>
+                            <td>{{ shop.name }}</td>
+                            <td>{{ shop.phonenumber }}</td>
+                            <td>
+                                <button type="button" class="btn btn-danger btn-xs delete"
+                                        shop_id="{{ shop.id }}">删除
+                                </button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

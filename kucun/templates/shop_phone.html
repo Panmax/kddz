@@ -1,0 +1,134 @@
+{% extends "base_showresult.html" %}
+{% block somescript %}
+    <div class="modal" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+
+            <div class="modal-content" id="modalContent">
+
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("button.change").click(function () {
+                var goods_id = $(this).attr("goods_id")
+                $.post("/kucun/api/remain/",
+                        {
+                            goods_id: goods_id,
+                            shop_id: $(this).attr("shop_id"),
+                            action: $(this).attr("action")
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('库存量不足！')
+                            } else {
+                                $('#' + goods_id).html('<b style="color:#FF000A;">' + data + '</b>');
+                                {#                            alert("数据：" + data + "\n状态：" + status);#}
+                            }
+                        });
+            });
+
+            $("button.diaoku").click(function () {
+                var goods_id = $(this).attr("goods_id");
+                var shop_id = $(this).attr("shop_id");
+                {#                alert(goods_id)#}
+                $('#myModal').modal({
+                    remote: "/kucun/api/diaoku/?goods_id=" + goods_id + "&shop_id=" + shop_id,
+                    backdrop: "static"
+                })
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+{% block table_content1 %}
+    {% for goodsshop in data1 %}
+        <tr>
+            <td style="width: 50%">{{ goodsshop.goods.name }}</td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-danger btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="sub" goods_id="{{ goodsshop.goods.id }}">-
+                </button>
+            </td>
+            <td style="width: 12%">
+                <div id="{{ goodsshop.goods.id }}">{{ goodsshop.remain }}</div>
+            </td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-success btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="add"
+                        goods_id="{{ goodsshop.goods.id }}">+
+                </button>
+            </td>
+            <td style="width: 16%">
+                <button type="button" class="btn btn-info btn-xs diaoku" shop_id="{{ goodsshop.shop.id }}"
+                        goods_id="{{ goodsshop.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content2 %}
+    {% for goodsshop in data2 %}
+        <tr>
+            <td style="width: 50%">{{ goodsshop.goods.name }}</td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-danger btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="sub"
+                        goods_id="{{ goodsshop.goods.id }}">-
+                </button>
+            </td>
+            <td style="width: 12%">
+                <div id="{{ goodsshop.goods.id }}">{{ goodsshop.remain }}</div>
+            </td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-success btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="add"
+                        goods_id="{{ goodsshop.goods.id }}">+
+                </button>
+            </td>
+            <td style="width: 16%">
+                <button type="button" class="btn btn-info btn-xs diaoku" shop_id="{{ goodsshop.shop.id }}"
+                        goods_id="{{ goodsshop.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content3 %}
+    {% for goodsshop in data3 %}
+        <tr>
+            <td style="width: 50%">{{ goodsshop.goods.name }}</td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-danger btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="sub"
+                        goods_id="{{ goodsshop.goods.id }}">-
+                </button>
+            </td>
+            <td style="width: 12%">
+                <div id="{{ goodsshop.goods.id }}">{{ goodsshop.remain }}</div>
+            </td>
+            <td style="width: 11%">
+                <button type="button" class="btn btn-success btn-xs change" shop_id="{{ goodsshop.shop.id }}"
+                        action="add"
+                        goods_id="{{ goodsshop.goods.id }}">+
+                </button>
+            </td>
+            <td style="width: 16%">
+                <button type="button" class="btn btn-info btn-xs diaoku" shop_id="{{ goodsshop.shop.id }}"
+                        goods_id="{{ goodsshop.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+
+
+
+{% endblock %}
+

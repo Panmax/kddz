@@ -1,0 +1,3 @@
+libraries:
+- name: "django"
+  version: "1.5"

@@ -1,0 +1,120 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#number").focus()
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var number = $('#number').val();
+                var shop_id = $('#ShopId').val();
+                var goods_id = $('#goodsId').val();
+                var price = $('#price').val();
+                var remark = $('#remark').val();
+                var inbound_channel_id = $('#inbound_channel_id').val();
+                if (!(number != "" && !isNaN(number))) {
+                    alert("请输入数量！");
+                    return;
+                }
+
+                if (!(price != "" && !isNaN(price))) {
+                    alert("请输入进价！");
+                    return;
+                }
+
+                if (price < 0) {
+                    alert("进价不允许为负数!");
+                    return;
+                }
+
+                $.post("/kucun/api/add/",
+                        {
+                            goods_id: goods_id,
+                            number: number,
+                            shop_id: shop_id,
+                            price: price,
+                            remark: remark,
+                            inbound_channel_id: inbound_channel_id
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('操作失败！库存不足！')
+                            } else if (data == 'stop') {
+                                alert('权限不足！')
+                            } else if (data == 'false') {
+                                alert('操作异常！')
+                            } else {
+                                {#                                var shop = $('.change' + '.g' + goods_id + '.s' + shop_id).text().substring(0, 2);#}
+                                $('.var' + '.g' + goods_id + '.s' + shop_id).text(data);
+                                var all_num = parseInt($('.all-num' + '.g' + goods_id).text()) + parseInt(number)
+                                $('.all-num' + '.g' + goods_id).html('<b style="color:#0AE01C;">' + all_num + '</b>');
+                                alert('操作成功！')
+                                $('#myclose').click()
+                            }
+
+                        });
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goodsshop.goods.goods_name }}】</b>加库
+        </h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goodsshop.shop.id }}" id="ShopId">
+        <input type="hidden" value="{{ goodsshop.goods.id }}" id="goodsId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td>数 量：</td>
+                <td><input type="text" id="number" name="number" autocomplete="off"/></td>
+            </tr>
+            {% if request.user.is_superuser %}
+                <tr>
+                    <td>进 价：</td>
+                    <td><input type="text" id="price" name="price" value="{{ goodsshop.goods.last_price }}" autocomplete="off"/></td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>供货商：</td>
+                <td>
+                    <select name="inbound_channel_id" class="form-control" id="inbound_channel_id">
+                        {% for inbound_channel in inbound_channels %}
+                            <option value="{{ inbound_channel.id }}">{{ inbound_channel.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>备 注：</td>
+                <td><textarea type="text" id="remark" name="remark"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

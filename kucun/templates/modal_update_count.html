@@ -1,0 +1,74 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#real_count").focus();
+
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var goods_id = $('#goodsId').val();
+                var shop_id = $('#shopId').val();
+                var real_count = $('#real_count').val();
+
+                $.post("/kucun/api/update_count/",
+                        {
+                            goods_id: goods_id,
+                            shop_id: shop_id,
+                            real_count: real_count
+                        },
+                        function (data, status) {
+                            $('.all-num' + '.g' + goods_id).html('<b style="color:#0AE01C;">' + data + '</b>');
+                            alert('操作成功！')
+                            $('#myclose').click()
+                        });
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goods_shop.goods.goods_name }}】</b>盘库
+        </h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goods_shop.goods.id }}" id="goodsId">
+        <input type="hidden" value="{{ goods_shop.shop.id }}" id="shopId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td style="width: 40%;">商品名：</td>
+                <td>{{ goods_shop.goods.goods_name }}</td>
+            </tr>
+            <tr>
+                <td>库存数量：</td>
+                <td>{{ goods_shop.remain }}</td>
+            </tr>
+            <tr>
+                <td>实际数量：</td>
+                <td><input type="text" id="real_count" name="real_count" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+{% endblock %}

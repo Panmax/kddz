@@ -1,0 +1,48 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .table.list {
+            max-width: 570px;
+        }
+
+        .modal-header {
+            max-width: 570px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block somescript %}
+{% endblock %}
+
+{% block content %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span
+                class="sr-only">Close</span></button>
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">{{ order.name }}</b>订单详情
+        </h4>
+    </div>
+    <table class="table table-striped list">
+        <tr>
+            <th>商品</th>
+            {% if request.user.is_superuser %}
+                <th>进价</th>
+            {% endif %}
+            <th>售价</th>
+            <th>数量</th>
+            <th>合计</th>
+        </tr>
+        {% for sell_record in sell_records %}
+            <tr>
+                <td>{{ sell_record.goods }}</td>
+                {% if request.user.is_superuser %}
+                    <td>{{ sell_record.average_price }}</td>
+                {% endif %}
+                <td>{{ sell_record.sell_price }}</td>
+                <td>{{ sell_record.sell_num }}</td>
+                <td>{{ sell_record.get_receivable }}</td>
+            </tr>
+        {% endfor %}
+
+    </table>
+{% endblock %}

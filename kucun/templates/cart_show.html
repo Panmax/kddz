@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <div class="modal" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+
+            <div class="modal-content" id="modalContent">
+
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $("button.clean").click(function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: '/kucun/api/clean_cart',
+                    dataType: 'html',
+                    error: function () {
+                        alert('清空失败');
+                    },
+                    success: function (data) {
+                        location.reload()
+                    }
+                });
+            });
+
+            $("button.delete").click(function (e) {
+                e.preventDefault();
+                var item_id = $(this).attr("item_id");
+
+                $.post("/kucun/api/delete_cart/",
+                        {
+                            item_id: item_id
+                        },
+                        function (data, status) {
+                            location.reload()
+                        });
+            });
+
+            $('button.submit').click(function () {
+                {% if not cart.items %}
+                    alert('购物车为空！')
+                    return
+                {% endif %}
+                $('#myModal').modal({
+                    remote: "/kucun/api/submit_cart/",
+                    backdrop: "static"
+                })
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+</head>
+<body>
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">购物车</h3>
+    </div>
+
+    <table class="table table-striped">
+        <tr>
+            <th>商品</th>
+            <th>数量</th>
+            <th>单价</th>
+            <th>删除</th>
+        </tr>
+        {% for item in cart.items %}
+            <tr>
+                <td>{{ item.product.goods.goods_name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>
+                    <button type="button" class="btn btn-warning btn-xs delete" item_id="{{ forloop.counter0 }}">删除
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td>合计：{{ cart.total_price }}</td>
+            <td>
+                <button type="button" class="btn btn-info btn-xs submit">提交
+                </button>
+            </td>
+            <td>
+
+            </td>
+
+            <td>
+                <button type="button" class="btn btn-danger btn-xs clean">清空
+                </button>
+            </td>
+        </tr>
+    </table>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,132 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("button.delete").click(function (e) {
+                e.preventDefault();
+                var order_id = $(this).attr("order_id");
+                if (confirm("是否确认删除")) {
+                    $.post("/kucun/api/delete_order_record/",
+                            {
+                                order_id: order_id
+                            },
+                            function (data, status) {
+                                if (data == 'chaoguo') {
+                                    alert('操作失败！库存不足！')
+                                } else if (data == 'stop') {
+                                    alert('权限不足！')
+                                } else if (data == 'false') {
+                                    alert('操作异常！')
+                                } else if (data == 'delete_false') {
+                                    alert('删除失败！')
+                                } else if (data == 'success') {
+                                    alert('删除成功！')
+                                    location.reload()
+                                }
+                            });
+                }
+
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">{{ order.name }}</b>订单信息
+        </h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goodsshop.shop.id }}" id="ShopId">
+        <input type="hidden" value="{{ goodsshop.goods.id }}" id="goodsId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td>总 价：</td>
+                <td><input type="text" id="all_price" name="all_price" readonly value="{{ order.all_price }}"/></td>
+            </tr>
+            {% if request.user.is_superuser %}
+                <tr>
+                    <td>总利润：</td>
+                    <td><input type="text" id="all_profit" name="all_profit" readonly value="{{ order.all_profit }}"/>
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>欠 账：</td>
+                <td>
+                    {% if order.is_arrears %}
+                        是
+                    {% else %}
+                        否
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <td>客 户：</td>
+                <td><input type="text" id="customer" name="customer" readonly value="{{ order.customer }}"/></td>
+            </tr>
+            {% if request.user.is_superuser %}
+                <tr>
+                    <td>联 电：</td>
+                    <td><input type="text" id="phonenumber" name="phonenumber" readonly
+                               value="{{ order.phonenumber }}"/>
+                    </td>
+                </tr>
+            {% endif %}
+            <tr>
+                <td>地 址：</td>
+                <td><input type="text" id="address" name="address" readonly value="{{ order.address }}"/></td>
+            </tr>
+            <tr>
+                <td>备 注：</td>
+                <td><textarea type="text" id="remark" name="remark" readonly>{{ order.remark }}</textarea></td>
+            </tr>
+            <tr>
+                <td>订单号：</td>
+                <td><input type="text" id="order" name="order" readonly value="{{ order.name }}"/></td>
+            </tr>
+            <tr>
+                <td>操作人：</td>
+                <td><input type="text" id="updater" name="updater" readonly value="{{ order.updater }}"/></td>
+            </tr>
+            <tr>
+                <td>
+                    {#                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>#}
+                </td>
+                <td>
+                    <table class="table">
+                        <tr>
+                            <td>
+                                <button type="button" class="btn btn-warning" data-dismiss="modal" id="myclose">
+                                    关闭
+                                </button>
+                            </td>
+                            <td>
+                                <button type="button" class="btn btn-danger delete" order_id="{{ order.id }}">
+                                    删除
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

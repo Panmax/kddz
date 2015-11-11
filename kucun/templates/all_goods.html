@@ -1,0 +1,180 @@
+{% extends "base_showresult.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block somescript %}
+    <div class="modal" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+
+            <div class="modal-content" id="modalContent">
+
+            </div>
+
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('button.sell').click(function () {
+                var goods_id = $(this).attr("goods_id");
+                var shop_id = $(this).attr("shop_id");
+                var action = $(this).attr("action");
+                {#                alert(goods_id);#}
+                {#                alert(shop_id);#}
+                $('#myModal').modal({
+                    remote: "/kucun/api/sell/?goods_id=" + goods_id + "&shop_id=" + shop_id + '&action=' + action,
+                    backdrop: "static"
+                })
+            });
+
+            $('button.add').click(function () {
+                var goods_id = $(this).attr("goods_id");
+                var shop_id = $(this).attr("shop_id");
+                var action = $(this).attr("action");
+                {#                alert(goods_id);#}
+                {#                alert(shop_id);#}
+                $('#myModal').modal({
+                    remote: "/kucun/api/add/?goods_id=" + goods_id + "&shop_id=" + shop_id + '&action=' + action,
+                    backdrop: "static"
+                })
+            });
+            {% if request.user.is_superuser %}
+                $('abbr.update').click(function () {
+                    var goods_id = $(this).attr("goods_id");
+                    $('#myModal').modal({
+                        remote: "/kucun/api/update/?goods_id=" + goods_id,
+                        backdrop: "static"
+                    })
+                });
+
+                $('.all-num').click(function () {
+                    var goods_id = $(this).attr("goods_id");
+                    var shop_id = $(this).attr("shop_id");
+                    $('#myModal').modal({
+                        remote: "/kucun/api/update_count/?goods_id=" + goods_id + "&shop_id=" + shop_id,
+                        backdrop: "static"
+                    })
+                });
+            {% endif %}
+
+            $('button.transfer').click(function () {
+                var goods_id = $(this).attr("goods_id");
+                var shop_id = $(this).attr("shop_id");
+                {#                                alert(goods_id);#}
+                {#                                alert(shop_id);#}
+                $('#myModal').modal({
+                    remote: "/kucun/api/transfer/?goods_id=" + goods_id + "&shop_id=" + shop_id,
+                    backdrop: "static"
+                })
+            });
+
+
+            $('body').on('hidden.bs.modal', '.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+        });
+    </script>
+{% endblock %}
+{% block table_content1 %}
+    {% for data in data1 %}
+        <tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+            <td style="width: 50%;">{% if data.goods.average_price < 0 %}*****{% endif %}
+                <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+                      goods_id="{{ data.goods.id }}">
+                    {% if data.goods.updated %}
+                        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+                </abbr>
+            </td>
+            <td>
+                <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+                     shop_id="{{ data.kadi.shop.id }}"><b
+                        style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-xs sell" shop_id="{{ data.kadi.shop.id }}"
+                        action="sub"
+                        goods_id="{{ data.kadi.goods.id }}">销售
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-success btn-xs add" shop_id="{{ data.kadi.shop.id }}"
+                        action="add"
+                        goods_id="{{ data.kadi.goods.id }}">进库
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-info btn-xs transfer" shop_id="{{ data.kadi.shop.id }}"
+                        goods_id="{{ data.kadi.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content2 %}
+    {% for data in data2 %}
+        <tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+            <td style="width: 50%;">{% if data.goods.average_price < 0 %}*****{% endif %}
+                <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+                      goods_id="{{ data.goods.id }}">
+                    {% if data.goods.updated %}
+                        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+                </abbr>
+            </td>
+            <td>
+                <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+                     shop_id="{{ data.kadi.shop.id }}"><b
+                        style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-xs sell" shop_id="{{ data.kadi.shop.id }}"
+                        action="sub"
+                        goods_id="{{ data.kadi.goods.id }}">销售
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-success btn-xs add" shop_id="{{ data.kadi.shop.id }}"
+                        action="add"
+                        goods_id="{{ data.kadi.goods.id }}">进库
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-info btn-xs transfer" shop_id="{{ data.kadi.shop.id }}"
+                        goods_id="{{ data.kadi.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content3 %}
+    {% for data in data3 %}
+        <tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+            <td style="width: 50%;">{% if data.goods.average_price < 0 %}*****{% endif %}
+                <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+                      goods_id="{{ data.goods.id }}">
+                    {% if data.goods.updated %}
+                        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+                </abbr>
+            </td>
+            <td>
+                <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+                     shop_id="{{ data.kadi.shop.id }}"><b
+                        style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+            </td>
+            <td>
+                <button type="button" class="btn btn-danger btn-xs sell" shop_id="{{ data.kadi.shop.id }}"
+                        action="sub"
+                        goods_id="{{ data.kadi.goods.id }}">销售
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-success btn-xs add" shop_id="{{ data.kadi.shop.id }}"
+                        action="add"
+                        goods_id="{{ data.kadi.goods.id }}">进库
+                </button>
+            </td>
+            <td>
+                <button type="button" class="btn btn-info btn-xs transfer" shop_id="{{ data.kadi.shop.id }}"
+                        goods_id="{{ data.kadi.goods.id }}">调库
+                </button>
+            </td>
+        </tr>
+    {% endfor %}
+{% endblock %}

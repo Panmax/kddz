@@ -1,0 +1,57 @@
+{% extends "base_showresult.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block table_content1 %}
+    {% for backup in backups1 %}
+        <tr>
+            <td style="width: 43%;">{{ backup.goods_name }}</td>
+            <td>
+                <div><b style="color: #ff000a;">{{ backup.all_count }}</b></div>
+            </td>
+            <td>
+                <div>G：<var>{{ backup.guoaodian_count }}</var></div>
+            </td>
+            <td>
+                <div>D：<var>{{ backup.dadian_count }}</var></div>
+            </td>
+            <td>
+                <div>H：<var>{{ backup.hongweidian_count }}</var></div>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content2 %}
+    {% for backup in backups2 %}
+        <tr>
+            <td style="width: 43%;">{{ backup.goods_name }}</td>
+            <td>
+                <div><b style="color: #ff000a;">{{ backup.all_count }}</b></div>
+            </td>
+            <td>
+                <div>G：<var>{{ backup.guoaodian_count }}</var></div>
+            </td>
+            <td>
+                <div>D：<var>{{ backup.dadian_count }}</var></div>
+            </td>
+            <td>
+                <div>H：<var>{{ backup.hongweidian_count }}</var></div>
+        </tr>
+    {% endfor %}
+{% endblock %}
+{% block table_content3 %}
+    {% for backup in backups3 %}
+        <tr>
+            <td style="width: 43%;">{{ backup.goods_name }}</td>
+            <td>
+                <div><b style="color: #ff000a;">{{ backup.all_count }}</b></div>
+            </td>
+            <td>
+                <div>G：<var>{{ backup.guoaodian_count }}</var></div>
+            </td>
+            <td>
+                <div>D：<var>{{ backup.dadian_count }}</var></div>
+            </td>
+            <td>
+                <div>H：<var>{{ backup.hongweidian_count }}</var></div>
+        </tr>
+    {% endfor %}
+{% endblock %}

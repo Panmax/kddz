@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+{% block somescript %}
+    <div class="modal" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" id="modalContent">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="myModal1" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modalContent">
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('abbr.order-info').click(function () {
+                var order_id = $(this).attr("order_id");
+                $('#myModal').modal({
+                    remote: "/kucun/api/order_info/?order_id=" + order_id,
+                    backdrop: "static"
+                })
+            });
+
+            $('button.list').click(function () {
+                var order_id = $(this).attr("order_id");
+                $('#myModal1').modal({
+                    remote: "/kucun/api/order_list/?order_id=" + order_id,
+                    backdrop: "static"
+                })
+            });
+
+            $('button.arrears').click(function () {
+                var order_id = $(this).attr("order_id")
+                $.post("/kucun/api/change_order_arrears/",
+                        {
+                            order_id: order_id
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('库存量不足！')
+                            } else {
+                                $('#' + order_id).html(data)
+                                alert('操作成功！\n重新刷新页面后，颜色即可显示正常')
+                            }
+                        });
+            });
+
+            $('body').on('hidden.bs.modal', '.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <table class="table">
+            <tr>
+                <th>订单号</th>
+                <th>客户</th>
+                <th>总金额</th>
+                <th>欠账</th>
+                <th>日期</th>
+                <th>清单</th>
+            </tr>
+            {% for order in orders %}
+                <tr>
+                    <td><abbr class="order-info" title="{{ order.remark }}"
+                              order_id="{{ order.id }}" onclick="null">{{ order.name }}</abbr>
+                    </td>
+                    <td>{{ order.customer }}</td>
+                    <td>{{ order.all_price }}</td>
+                    <td>
+                        {% if order.is_arrears %}
+                            <button id="{{ order.id }}" type="button" class="btn btn-danger btn-xs arrears"
+                                    order_id="{{ order.id }}">是
+                            </button>
+                        {% else %}
+                            <button id="{{ order.id }}" type="button" class="btn btn-success btn-xs arrears"
+                                    order_id="{{ order.id }}">否
+                            </button>
+                        {% endif %}
+                    </td>
+                    <td>{{ order.date|date:"Y.n.j" }}</td>
+                    <td>
+                        <button id="{{ order.id }}" type="button" class="btn btn-info btn-xs list"
+                                order_id="{{ order.id }}">清单
+                        </button>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endblock %}

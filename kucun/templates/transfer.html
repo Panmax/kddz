@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}调库记录{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <table class="table table-striped">
+            <tr>
+                <th>调出</th>
+                <th>调入</th>
+                <th>商品名</th>
+                <th>类型</th>
+                <th>数量</th>
+                <th>日期</th>
+                <th>操作人</th>
+            </tr>
+            {% for transfer_good in transfer_goods %}
+                <tr>
+                    <td>{{ transfer_good.from_shop }}</td>
+                    <td>{{ transfer_good.to_shop }}</td>
+                    <td>{{ transfer_good.goods }}</td>
+                    <td>
+                        {% if transfer_good.goods.goods_type == 0 %}
+                            手机
+                        {% elif transfer_good.goods.goods_type == 1 %}
+                            配件
+                        {% endif %}
+                    </td>
+                    <td>{{ transfer_good.change_num }}</td>
+                    <td>{{ transfer_good.date|date:"Y.n.j H:i" }}</td>
+                    <td>{{ transfer_good.updater }}</td>
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}

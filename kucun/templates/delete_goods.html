@@ -1,0 +1,115 @@
+{% extends "base_showresult.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block somescript %}
+<div class="modal" id="myModal" tabindex="-1" role="dialog"
+     aria-labelledby="mySmallModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+
+        <div class="modal-content" id="modalContent">
+
+        </div>
+
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('button.delete').click(function () {
+            var goods_id = $(this).attr("goods_id");
+            var goods_name = $(this).attr("goods_name");
+            if (confirm("是否确认删除［"+goods_name+"]?")) {
+                    $.post("/kucun/api/delete_goods/",
+                            {
+                                goods_id: goods_id
+                            },
+                            function (data, status) {
+                                if (data == 'chaoguo') {
+                                    alert('操作失败！库存不足！')
+                                } else if (data == 'stop') {
+                                    alert('权限不足！')
+                                } else if (data == 'false') {
+                                    alert('操作异常！')
+                                } else if (data == 'delete_false') {
+                                    alert('删除失败！')
+                                } else if (data == 'success') {
+                                    alert('删除成功！')
+                                    location.reload()
+                                }
+                            });
+                }
+            });
+
+    });
+</script>
+{% endblock %}
+{% block table_content1 %}
+{% for data in data1 %}
+<tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+<td style="width: 50%;">
+    <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+          goods_id="{{ data.goods.id }}">
+        {% if data.goods.updated %}
+        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+    </abbr>
+</td>
+<td>
+    <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+         shop_id="{{ data.kadi.shop.id }}"><b
+            style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+</td>
+<td>
+    <button type="button" class="btn btn-danger btn-xs delete" shop_id="{{ data.kadi.shop.id }}"
+            goods_name="{{ data.kadi.goods.goods_name }}"
+            goods_id="{{ data.kadi.goods.id }}">删除
+    </button>
+</td>
+</tr>
+{% endfor %}
+{% endblock %}
+{% block table_content2 %}
+{% for data in data2 %}
+<tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+<td style="width: 50%;">
+    <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+          goods_id="{{ data.goods.id }}">
+        {% if data.goods.updated %}
+        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+    </abbr>
+</td>
+<td>
+    <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+         shop_id="{{ data.kadi.shop.id }}"><b
+            style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+</td>
+<td>
+    <button type="button" class="btn btn-danger btn-xs delete" shop_id="{{ data.kadi.shop.id }}"
+            goods_name="{{ data.kadi.goods.goods_name }}"
+            goods_id="{{ data.kadi.goods.id }}">删除
+    </button>
+</td>
+</tr>
+{% endfor %}
+{% endblock %}
+{% block table_content3 %}
+{% for data in data3 %}
+<tr {% if data.goods.show_color %}bgcolor="#ff4c4ed9"{% endif %}>
+<td style="width: 50%;">
+    <abbr href="#" class="update {{ data.goods.id }}" title="{{ data.goods.goods_name }}"
+          goods_id="{{ data.goods.id }}">
+        {% if data.goods.updated %}
+        <span class="glyphicon glyphicon-heart"></span>{% endif %} {{ data.goods }}
+    </abbr>
+</td>
+<td>
+    <div class="all-num g{{ data.goods.id }}" goods_id="{{ data.kadi.goods.id }}"
+         shop_id="{{ data.kadi.shop.id }}"><b
+            style="color: #ff000a;">{{ data.kadi.remain }}</b></div>
+</td>
+<td>
+    <button type="button" class="btn btn-danger btn-xs delete" shop_id="{{ data.kadi.shop.id }}"
+            goods_name="{{ data.kadi.goods.goods_name }}"
+            goods_id="{{ data.kadi.goods.id }}">删除
+    </button>
+</td>
+</tr>
+{% endfor %}
+{% endblock %}

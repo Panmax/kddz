@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+
+
+{% block somescript %}
+    <div class="modal" id="myModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content" id="modalContent">
+            </div>
+        </div>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('abbr.sell-info').click(function () {
+                var sell_record_id = $(this).attr("sell_record_id");
+                $('#myModal').modal({
+                    remote: "/kucun/api/sell_info/?sell_record_id=" + sell_record_id,
+                    backdrop: "static"
+                })
+            });
+            $('body').on('hidden.bs.modal', '.modal', function () {
+                $(this).removeData('bs.modal');
+            });
+
+            $('button.arrears').click(function () {
+                {#                alert('arrears')#}
+                var sell_record_id = $(this).attr("sell_record_id")
+                $.post("/kucun/api/change_arrears/",
+                        {
+                            sell_record_id: sell_record_id
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('库存量不足！')
+                            } else {
+                                $('#' + sell_record_id).html(data)
+                                alert('操作成功！\n重新刷新页面后，颜色即可显示正常')
+                                {#                                alert("数据：" + data + "\n状态：" + status);#}
+                            }
+                        });
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-12">
+        <table class="table table-condensed">
+           <tr>
+               <th class="success">纯利润: {{ all_profit }}元</th>
+               <th class="info">毛利润:{{ mao_profit }}元</th>
+               <th class="danger">共支出: {{ all_cost }}元</th>
+               <th class="warning">总货款:{{ all_sell }}元</th>
+               {% if select_date %}
+               <th class="active"><a href="/kucun/arrears/{{select_date.year}}/{{select_date.month}}">总欠款:{{ all_arrears }}元</a></th>
+               {% else %}
+               <th class="active">总欠款:{{ all_arrears }}元</th>
+               {% endif %}
+            </tr>
+        </table>
+        <table class="table table-striped">
+            <tr>
+                <th>商品</th>
+                {#                <th>进价</th>#}
+                <th>卖价</th>
+                <th>数量</th>
+                {% if request.user.is_superuser %}
+                    <th>利润</th>
+                {% else %}
+                    <th>总计</th>
+                {% endif %}
+
+                <th>欠账</th>
+                <th>日期</th>
+                {#                <th>操作人</th>#}
+            </tr>
+            {% for sell_record in sell_records %}
+                <tr>
+                    <td><abbr class="sell-info" title="{{ sell_record.remark }}"
+                              sell_record_id="{{ sell_record.id }}">{{ sell_record.goods }}</abbr></td>
+                    {#                    <td>{{ sell_record.average_price }}</td>#}
+                    <td>{{ sell_record.sell_price }}</td>
+                    <td>{{ sell_record.sell_num }}</td>
+                    {% if request.user.is_superuser %}
+                        <td>{{ sell_record.get_profit }}</td>
+                    {% else %}
+                        <td>{{ sell_record.get_receivable }}</td>
+                    {% endif %}
+                    <td>
+                        {% if sell_record.is_arrears %}
+                            <button id="{{ sell_record.id }}" type="button" class="btn btn-danger btn-xs arrears"
+                                    sell_record_id="{{ sell_record.id }}">是
+                            </button>
+                        {% else %}
+                            <button id="{{ sell_record.id }}" type="button" class="btn btn-success btn-xs arrears"
+                                    sell_record_id="{{ sell_record.id }}">否
+                            </button>
+                        {% endif %}
+                    </td>
+                    <td>{{ sell_record.date|date:"Y.n.j" }}</td>
+                    {#                    <td>{{ sell_record.updater }}</td>#}
+                </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+{% endblock %}

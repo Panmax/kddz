@@ -1,0 +1,161 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#number").focus()
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var number = $('#number').val();
+                var price = $('#price').val();
+                var arrears = $('input:radio:checked').val();
+                var customer = $('#customer').val();
+                var phonenumber = $('#phonenumber').val();
+                var address = $('#address').val();
+                var remark = $('#remark').val();
+
+                var shop_id = $('#ShopId').val();
+                var goods_id = $('#goodsId').val();
+                if (!(number != "" && !isNaN(number))) {
+                    alert("请输入数量！");
+                    return;
+                }
+
+                if (price < 0) {
+                    alert("销售价格不允许为负数！");
+                    return
+                }
+
+                $.post("/kucun/api/sell/",
+                        {
+                            goods_id: goods_id,
+                            shop_id: shop_id,
+                            number: number,
+                            price: price,
+                            arrears: arrears,
+                            customer: customer,
+                            phonenumber: phonenumber,
+                            address: address,
+                            remark: remark
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('操作失败！库存不足！')
+                            } else if (data == 'stop') {
+                                alert('权限不足！')
+                            } else if (data == 'false') {
+                                alert('操作异常！')
+                            } else {
+                                {#                                var shop = $('.change' + '.g' + goods_id + '.s' + shop_id).text().substring(0, 2);#}
+                                $('.var' + '.g' + goods_id + '.s' + shop_id).text(data);
+                                var all_num = data
+                                $('.all-num' + '.g' + goods_id).html('<b style="color:#0AE01C;">' + all_num + '</b>');
+                                alert('操作成功！')
+                                $('#myclose').click()
+                            }
+
+                        });
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+
+
+            $("#all_price").focus(function (e) {
+                e.preventDefault();
+                var number = $('#number').val();
+                var price = $('#price').val();
+                var all_price = accMul(number, price);
+                $("#all_price").val(all_price);
+
+                function accMul(arg1, arg2) {
+                    var m = 0, s1 = arg1.toString(), s2 = arg2.toString();
+                    try {
+                        m += s1.split(".")[1].length
+                    } catch (e) {
+                    }
+                    try {
+                        m += s2.split(".")[1].length
+                    } catch (e) {
+                    }
+                    return Number(s1.replace(".", "")) * Number(s2.replace(".", "")) / Math.pow(10, m)
+                }
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goodsshop.goods.goods_name }}】</b>销售
+        </h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goodsshop.shop.id }}" id="ShopId">
+        <input type="hidden" value="{{ goodsshop.goods.id }}" id="goodsId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td>数 量：</td>
+                <td><input type="text" id="number" name="number" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>单 价：</td>
+                <td><input type="text" id="price" name="price" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>合 计：</td>
+                <td>
+                    <input type="text" id="all_price" name="all_price" autocomplete="off" readonly/>
+                </td>
+            </tr>
+            <tr>
+                <td>欠 账：</td>
+                <td>
+                    <label class="radio-inline">
+                        <input type="radio" name="arrears" id="arrears1" value="1">是
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="arrears" checked id="arrears2" value="0">否
+                    </label>
+                </td>
+            </tr>
+            <tr>
+                <td>客 户：</td>
+                <td><input type="text" id="customer" name="customer" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>联 电：</td>
+                <td><input type="text" id="phonenumber" name="phonenumber" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>地 址：</td>
+                <td><input type="text" id="address" name="address" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>备 注：</td>
+                <td><textarea type="text" id="remark" name="remark" autocomplete="off"></textarea></td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

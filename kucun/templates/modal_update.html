@@ -1,0 +1,114 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var name = $('#name').val();
+                var price = $('#price').val();
+                var last_price = $('#last_price').val();
+                var goods_id = $('#goodsId').val();
+                var old_goods_name = $('#oldGoodsName').val();
+                var old_goods_price = $('#oldGoodsPrice').val();
+                var oldGoodsLastPrice = $('#oldGoodsLastPrice').val();
+
+                if (!(price != "" && !isNaN(price))) {
+                    alert("请输入平均进价！");
+                    return;
+                }
+
+                if (!(last_price != "" && !isNaN(last_price))) {
+                    alert("请输入上次进价！");
+                    return;
+                }
+
+                if (price < 0 || last_price < 0 ) {
+                    alert("平均进价和上次进价不允许为负数！")
+                    return
+                }
+
+                if (name == old_goods_name && price == old_goods_price && last_price == oldGoodsLastPrice) {
+                    alert('无更改！')
+                    return
+                }
+
+
+                $.post("/kucun/api/update/",
+                        {
+                            old_goods_name: old_goods_name,
+                            old_goods_price: old_goods_price,
+                            name: name,
+                            goods_id: goods_id,
+                            price: price
+                        },
+                        function (data, status) {
+                            if (data == 'stop') {
+                                alert('权限不足！')
+                            } else if (data == 'false') {
+                                alert('操作异常！')
+                            } else if (data == 'not_update_name') {
+                                alert('不能更改名称！')
+                            } else {
+                                $('a.update.' + goods_id).html('<b style="color:#FF000A;">' + data + '</b>')
+                                $('a.update.' + goods_id).attr("title", price)
+                                alert('操作成功！')
+                                $('#myclose').click()
+
+                            }
+                        });
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goods.goods_name }}】</b>更新</h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goods.id }}" id="goodsId">
+        <input type="hidden" value="{{ goods.goods_name }}" id="oldGoodsName">
+        <input type="hidden" value="{{ goods.average_price }}" id="oldGoodsPrice">
+        <input type="hidden" value="{{ goods.last_price }}" id="oldGoodsLastPrice">
+
+        <table class="table table-bordered">
+            <tr>
+                <td style="width: 40%;">商品名：</td>
+                <td><input type="text" id="name" name="name" value="{{ goods.goods_name }}" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>平均进价：</td>
+                <td><input type="text" id="price" name="price" value="{{ goods.average_price }}" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>上次进价：</td>
+                <td><input type="text" id="last_price" name="last_price" value="{{ goods.last_price }}" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>最近更新：</td>
+                <td>{{ goods.update_date|date:"Y年n月j日" }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+
+        </table>
+    </form>
+{% endblock %}

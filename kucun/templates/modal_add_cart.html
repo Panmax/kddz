@@ -1,0 +1,97 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var number = $('#number').val();
+                var price = $('#price').val();
+                var shop_id = $('#ShopId').val();
+                var goods_id = $('#goodsId').val();
+                if (!(number != "" && !isNaN(number))) {
+                    alert("请输入数量！");
+                    return;
+                }
+                if (!(price != "" && !isNaN(price))) {
+                    alert("请输入单价！");
+                    return;
+                }
+
+                if (price < 0) {
+                    alert("单价不允许为负！");
+                    return
+                }
+                $.post("/kucun/api/add_cart/",
+                        {
+                            goods_id: goods_id,
+                            shop_id: shop_id,
+                            number: number,
+                            price: price
+                        },
+                        function (data, status) {
+                            if (data == 'chaoguo') {
+                                alert('操作失败！库存不足！')
+                            } else if (data == 'stop') {
+                                alert('权限不足！')
+                            } else if (data == 'false') {
+                                alert('操作异常！')
+                            } else {
+                                {#                                var shop = $('.change' + '.g' + goods_id + '.s' + shop_id).text().substring(0, 2);#}
+                                $('.var' + '.g' + goods_id + '.s' + shop_id).text(data);
+                                var all_num = data
+                                $('.all-num' + '.g' + goods_id).html('<b style="color:#0AE01C;">' + all_num + '</b>');
+{#                                alert('操作成功！')#}
+                                $('#myclose').click()
+                            }
+
+                        });
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goodsshop.goods.goods_name }}】</b>下单
+        </h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goodsshop.shop.id }}" id="ShopId">
+        <input type="hidden" value="{{ goodsshop.goods.id }}" id="goodsId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td>数 量：</td>
+                <td><input type="text" id="number" name="number" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>单 价：</td>
+                <td><input type="text" id="price" name="price" autocomplete="off"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

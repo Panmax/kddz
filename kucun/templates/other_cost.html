@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block otherstyle %}
+    <style>
+        .form-signin {
+            margin: 0 auto;
+            max-width: 330px;
+            padding: 15px;
+        }
+
+        .form-signin .form-control {
+            box-sizing: border-box;
+            font-size: 16px;
+            height: auto;
+            padding: 10px;
+            position: relative;
+        }
+
+        .form-signin .form-control:focus {
+            z-index: 2;
+        }
+
+        .form-signin input[type="text"] {
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+            margin-bottom: 1px;
+            margin-top: -7px;
+        }
+
+        .form-signin button {
+            margin-top: 50px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("button.delete").click(function (e) {
+                e.preventDefault();
+                var inbound_id = $(this).attr("inbound_id");
+                if (confirm("是否确认删除")) {
+                    $.post("/kucun/api/delete_inbound/",
+                            {
+                                inbound_id: inbound_id
+                            },
+                            function (data, status) {
+                                if (data == 'chaoguo') {
+                                    alert('操作失败！库存不足！')
+                                } else if (data == 'stop') {
+                                    alert('权限不足！')
+                                } else if (data == 'false') {
+                                    alert('操作异常！')
+                                } else if (data == 'delete_false') {
+                                    alert('删除失败！')
+                                } else if (data == 'success') {
+                                    alert('删除成功！')
+                                    location.reload()
+                                }
+                            });
+                }
+            });
+
+            $("#myModal").on("hidden.bs.modal", function (e) {
+                $(this).removeData('bs.modal');
+                {#                location.reload()#}
+            });
+        });
+    </script>
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-5">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">开销</h3>
+            </div>
+            <div class="panel-body">
+                <form role="form" class="form-signin" method="post">
+                    <p>用途：</p>
+                    <input type="text" autofocus="" required="" name="purpose" placeholder="用途"
+                           class="form-control">
+
+                    <p>金 额：</p>
+                    <input type="text" placeholder="金额" name="price" class="form-control">
+                    <button type="submit" class="btn btn-lg btn-primary btn-block">提交</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-7">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title">近期开销</h3>
+            </div>
+            <div class="panel-body">
+
+
+                <div class="panel-group" id="accordion">
+                    {% for every_day_cost_record in every_day_cost_records %}
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#accordion"
+                                       href="#collapse{{ forloop.counter0 }}">
+                                        {{ every_day_cost_record.date|date:"Y年n月j日" }}
+                                        <b style="color: #ff000a;">开销：{{ every_day_cost_record.cost }}</b>
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="collapse{{ forloop.counter0 }}"
+                                 class="panel-collapse collapse {% if forloop.counter0 == 0 %}in{% endif %}">
+                                <div class="panel-body">
+                                    <table class="table table-striped">
+                                        <tr>
+                                            <th>用 途</th>
+                                            <th>金 额</th>
+                                            <th>删 除</th>
+                                        </tr>
+                                        {% for cost_record in every_day_cost_record.records %}
+                                            <tr>
+                                                <td>{{ cost_record.purpose }}</td>
+                                                <td>{{ cost_record.price }}</td>
+                                                <td></td>
+                                        {% endfor %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+
+{#                <table class="table table-hover">#}
+{#                    <tr>#}
+{#                        <th>名 称</th>#}
+{#                        <th>联 电</th>#}
+{#                        <th>删 除</th>#}
+{#                    </tr>#}
+{#                    {% for inbound in inbounds %}#}
+{#                        <tr>#}
+{#                            <td>{{ inbound.name }}</td>#}
+{#                            <td>{{ inbound.phonenumber }}</td>#}
+{#                            <td>#}
+{#                                <button type="button" class="btn btn-danger btn-xs delete"#}
+{#                                        inbound_id="{{ inbound.id }}">删除#}
+{#                                </button>#}
+{#                            </td>#}
+{#                        </tr>#}
+{#                    {% endfor %}#}
+{#                </table>#}
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block somescript %}
+<script>
+    $(document).ready(function () {
+        var ctx = document.getElementById("myChart").getContext("2d");
+        var data = {
+            labels : ["{{ profit_list.6.month|date:"Y年n月" }}【{{ profit_list.6.profit }}元】","{{ profit_list.5.month|date:"Y年n月" }}【{{ profit_list.5.profit }}元】","{{ profit_list.4.month|date:"Y年n月" }}【{{ profit_list.4.profit }}元】","{{ profit_list.3.month|date:"Y年n月" }}【{{ profit_list.3.profit }}元】","{{ profit_list.2.month|date:"Y年n月" }}【{{ profit_list.2.profit }}元】","{{ profit_list.1.month|date:"Y年n月" }}【{{ profit_list.1.profit }}元】","{{ profit_list.0.month|date:"Y年n月" }}【{{ profit_list.0.profit }}元】"],
+            datasets : [
+                {
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    pointColor : "rgba(151,187,205,1)",
+                    pointStrokeColor : "#fff",
+                    data : [{{ profit_list.6.profit }},{{ profit_list.5.profit }},{{ profit_list.4.profit }},{{ profit_list.3.profit }},{{ profit_list.2.profit }},{{ profit_list.1.profit }},{{ profit_list.0.profit }}]
+                }
+            ]
+        }
+        var myNewChart = new Chart(ctx).Line(data);
+        new Chart(ctx).Line(data,{scaleOverride : true, scaleSteps : 20,scaleStepWidth : 3200,scaleStartValue : 0,});
+    });
+
+</script>
+{% endblock %}
+{% block content %}
+    <canvas id="myChart" width="600" height="250"></canvas>
+{% endblock %}

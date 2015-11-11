@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block somescript %}
+<script>
+    $(document).ready(function () {
+        var ctx = document.getElementById("myChart").getContext("2d");
+        var data = {
+            labels : [
+                {% for record in sell_arrar %}
+                    "{{ record.goods.goods_name }}:{{ record.sell_count }}",
+                {% endfor %}
+            ],
+            datasets : [
+                {
+                    fillColor : "rgba(151,187,205,0.5)",
+                    strokeColor : "rgba(151,187,205,1)",
+                    data : [
+
+                    {% for record in sell_arrar %}
+                        "{{ record.sell_count }}",
+                    {% endfor %}
+                    ]
+                }
+            ]
+        }
+        var myNewChart = new Chart(ctx).Bar(data);
+        new Chart(ctx).Bar(data,{scaleOverride : true, scaleSteps : 30, scaleStepWidth : 4000, scaleStartValue : 0});
+    });
+
+</script>
+{% endblock %}
+{% block content %}
+    <canvas id="myChart" width="1500" height="300"></canvas>
+{% endblock %}

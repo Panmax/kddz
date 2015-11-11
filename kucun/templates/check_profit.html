@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block somescript %}
+    <link href="http://cdn.bootcss.com/bootstrap-datepicker/1.3.0/css/datepicker.min.css" rel="stylesheet">
+    <link href="http://cdn.bootcss.com/bootstrap-datepicker/1.3.0/css/datepicker3.min.css" rel="stylesheet">
+    <script src="http://cdn.bootcss.com/bootstrap-datepicker/1.3.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="http://cdn.bootcss.com/bootstrap-datepicker/1.3.0/js/locales/bootstrap-datepicker.zh-CN.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.datepicker').datepicker({
+                format: 'yyyy-mm',
+                autoclose: true,
+                language: 'zh-CN',
+                startView:1
+            }).on('changeMonth', function(ev){
+//                alert(ev.date.valueOf())
+//                $('.datepicker').datepicker('hide');
+            })
+        });
+    </script>
+{% endblock %}
+{% block otherstyle %}
+    <style>
+    .form-signin {
+        margin: 0 auto;
+        max-width: 330px;
+        padding: 15px;
+    }
+
+    .form-signin .form-signin-heading, .form-signin .checkbox {
+        margin-bottom: 10px;
+    }
+
+    .form-signin .checkbox {
+        font-weight: normal;
+    }
+
+    .form-signin .form-control {
+        box-sizing: border-box;
+        font-size: 16px;
+        height: auto;
+        padding: 10px;
+        position: relative;
+    }
+
+    .form-signin .form-control:focus {
+        z-index: 2;
+    }
+
+    .form-signin input[type="text"] {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin-bottom: 10px;
+    }</style>{% endblock %}
+{% block content %}
+    <form role="form" class="form-signin" method="post">
+        <input type="text" data-provide="datepicker" name="date" readonly class="form-control datepicker" value="点击选择日期"/>
+        <button type="submit" class="btn btn-lg btn-primary btn-block">查询</button>
+    </form>
+{% endblock %}

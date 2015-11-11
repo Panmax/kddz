@@ -1,0 +1,99 @@
+{% extends "modal_base.html" %}
+{% block otherstyle %}
+    <style>
+        .form-diaoku {
+            max-width: 270px;
+        }
+
+        .modal-header {
+            max-width: 270px;
+        }
+    </style>
+{% endblock %}
+
+{% block somescript %}
+    <script>
+        $(document).ready(function () {
+            $("#mySubmit").click(function (e) {
+                e.preventDefault();
+                var number = $('#number').val();
+                var to_shop_name = $('#toShop').val();
+                var from_shop_id = $('#fromShopId').val();
+                var goods_id = $('#goodsId').val();
+
+                if (!(number != "" && !isNaN(number))) {
+                    alert("请输入数量！");
+                    return;
+                }
+
+                $.post("/kucun/api/diaoku/",
+                        {
+                            goods_id: goods_id,
+                            number: number,
+                            to_shop_name: to_shop_name,
+                            from_shop_id: from_shop_id
+                        },
+                        function (data, status) {
+                            {#                            $('#' + goods_id).text(data);#}
+                            if (data == 'chaoguo') {
+                                alert('操作失败！库存不足！')
+                            } else if (data == 'false') {
+                                alert('操作异常！')
+                            } else if (data == 'same') {
+                                alert('出库与入库不能相同！')
+                            } else {
+                                {#                                alert("数据：" + data + "\n状态：" + status);#}
+                                {#                                var result = '<xxx style="font-size:18px;">调库成功，本店剩余：' + data + '</xxx><br><br><xxx style="font-size:18px;">关闭继续操作</xxx>'#}
+                                $('#' + goods_id).html('<b style="color:#FF000A;">' + data + '</b>');
+                                alert('操作成功！')
+                                $('#myclose').click()
+                            }
+                        });
+            });
+        });
+    </script>
+{% endblock %}
+{% block content %}
+    <div class="modal-header">
+        <h4 class="modal-title" id="myModalLabel"><b style="color: #ff000a">【{{ goodsshop.goods.name }}】</b>调库</h4>
+    </div>
+    <form role="form" class="form-diaoku" method="post" id="form-diaoku">
+        <input type="hidden" value="{{ goodsshop.shop.id }}" id="fromShopId">
+        <input type="hidden" value="{{ goodsshop.goods.id }}" id="goodsId">
+
+        <table class="table table-bordered">
+            <tr>
+                <td style="width: 40%;">调 出：</td>
+                <td>{{ goodsshop.shop.name }}</td>
+            </tr>
+            <tr>
+                <td>调 入：</td>
+                <td>
+                    <select name="toShop" class="form-control" id="toShop">
+                        {% if goodsshop.shop.name != '国奥店' %}
+                            <option value="国奥店">国奥店</option>
+                        {% endif %}
+                        {% if goodsshop.shop.name != '大店' %}
+                            <option value="大店">大店</option>
+                        {% endif %}
+                        {% if goodsshop.shop.name != '红卫店' %}
+                            <option value="红卫店">红卫店</option>
+                        {% endif %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>数 量：</td>
+                <td><input type="text" id="number" name="number"/></td>
+            </tr>
+            <tr>
+                <td>
+                    <button class="btn btn-lg btn-success submit" id="mySubmit">确定</button>
+                </td>
+                <td>
+                    <button type="button" class="btn btn-lg btn-warning" data-dismiss="modal" id="myclose">关闭</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+{% endblock %}

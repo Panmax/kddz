@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="col-md-4">
+        <table class="table table-bordered">
+            {% block table_content1 %}{% endblock %}
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-bordered">
+            {% block table_content2 %}{% endblock %}
+        </table>
+    </div>
+    <div class="col-md-4">
+        <table class="table table-bordered">
+            {% block table_content3 %}{% endblock %}
+        </table>
+    </div>
+{% endblock %}
