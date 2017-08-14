@@ -12,4 +12,4 @@
 
 但是停用前忘了截图，所以抱歉没图可以预览。
 
-P.S. 我的重构版本未多用户版本，欢迎试用 [https://bossku.cn/](https://bossku.cn/) 
+P.S. 重构后的版本开放注册，欢迎试用 [https://bossku.cn/](https://bossku.cn/) 
